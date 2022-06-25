@@ -1,8 +1,7 @@
-
-import json
 import os
-import sys
 import re
+import sys
+import json
 
 #get the json response ive choose a json file here because idk how to parse it directly
 json_file = open("brief.json", "r")
