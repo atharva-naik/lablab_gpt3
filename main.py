@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from pandas import array
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
+import convert_to_audio_pyttsx3 as convert
 
 app = FastAPI()
 load_dotenv()
@@ -42,7 +43,9 @@ def gpt3_simple_prompt_response(query: str, desc: str):
     )
     con_context.append(query)
     con_context.append(response["choices"][0]["text"])
-    return response["choices"][0]["text"]
+
+    #convert.synthesize_text({'text': response["choices"][0]["text"], 'id': response["id"]})
+    return {'text': response["choices"][0]["text"], 'id': response["id"]}
 
 @app.get("/prompt_tts")
 def gpt3_prompt_response_with_voice(query: str, desc: str):
@@ -67,3 +70,7 @@ def read_item(item_id: int, q: Union[str, None] = None):
 def update_item(item_id: int, item: Item):
     return {"item_name": item.name, "item_id": item_id}
 """
+
+
+
+
