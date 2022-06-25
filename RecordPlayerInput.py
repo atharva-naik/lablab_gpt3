@@ -21,28 +21,46 @@ import urllib.parse
 #         print(f"Text entered was: {text}")
 
 
-def listenForForwardSlash(start_delim='/', description='', domain='http://localhost:8000'):
+# def listenForForwardSlash(start_delim='/', description='', domain='http://localhost:8000', target_destination = '/downloaded/'):
+
+#     while True:
+#         keyboard.wait(start_delim)
+#         keyboard.read_key()  # to read first slash
+#         print(f"'{start_delim}' was pressed. Will now start recording the keys.")
+#         text = ""
+#         key_up = True
+#         while True:
+#             key_up = not(key_up)
+#             char = keyboard.read_key()
+#             if key_up == False:
+#                 if len(char) == 1:
+#                     text += char
+#                 elif char == 'space':
+#                     text += ' '
+#                 elif char == 'backspace':
+#                     text = text[:-1]
+#                 print("", end='\r')
+#                 print("typing: ", text, end='\r')
+#             if char == 'enter':
+#                 break
+#         print("", end='\r')
+#         print("final: ", text, end='\r')
+#         safe_string = urllib.parse.quote_plus(description)
+#         print(f'Sent Request. Waiting for response...')
+#         r = requests.get(
+#             f'{domain}/prompt_tts?desc={safe_string}&query=%22What%20does%20Miller%20do%22', params={'query': text})
+#         print(f'Response received.')
+#         response_json = json.loads(r.text)
+#         print(response_json['text'])
+
+def listenForForwardSlash(start_delim='/', description='', domain='http://localhost:8000', target_destination = '/downloaded/'):
 
     while True:
         keyboard.wait(start_delim)
         keyboard.read_key()  # to read first slash
         print(f"'{start_delim}' was pressed. Will now start recording the keys.")
-        text = ""
-        key_up = True
-        while True:
-            key_up = not(key_up)
-            char = keyboard.read_key()
-            if key_up == False:
-                if len(char) == 1:
-                    text += char
-                elif char == 'space':
-                    text += ' '
-                elif char == 'backspace':
-                    text = text[:-1]
-                print(text)
-            if char == 'enter':
-                break
-        print(text)
+        text = ' '.join(list(keyboard.get_typed_strings(keyboard.record(until='enter', suppress=False, trigger_on_release=False), allow_backspace=True)))
+        print("finalv2: ", text)
         safe_string = urllib.parse.quote_plus(description)
         print(f'Sent Request. Waiting for response...')
         r = requests.get(
@@ -50,7 +68,6 @@ def listenForForwardSlash(start_delim='/', description='', domain='http://localh
         print(f'Response received.')
         response_json = json.loads(r.text)
         print(response_json['text'])
-
 
 # with keyboard.Events() as events:
 #     for event in events:
