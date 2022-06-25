@@ -3,10 +3,10 @@ import openai
 from typing import *
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from pandas import array
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 import convert_to_audio_pyttsx3 as convert
+import uvicorn
 
 app = FastAPI()
 load_dotenv()
@@ -49,10 +49,10 @@ def gpt3_simple_prompt_response(query: str, desc: str):
 
 @app.get("/prompt_tts")
 def gpt3_prompt_response_with_voice(query: str, desc: str):
-    res = gpt3_simple_prompt_response(query, desc)
-    tts_path = tts_dummy(res)
+    res_json = gpt3_simple_prompt_response(query, desc)
+    tts_path = convert.synthesize_text(res_json)
     
-    return {"text": res, "tts_url": tts_path}
+    return {"text": res_json['text'], "tts_url": tts_path}
 
 @app.get("/reset")
 def reset():
@@ -71,6 +71,7 @@ def update_item(item_id: int, item: Item):
     return {"item_name": item.name, "item_id": item_id}
 """
 
-
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=8000, log_level="info")
 
 
