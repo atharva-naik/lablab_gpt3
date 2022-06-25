@@ -29,8 +29,9 @@ def tts_dummy(res: str):
 
 @app.get("/prompt")
 def gpt3_simple_prompt_response(query: str, desc: str):
-    print(con_context)
-    prompt=desc+"\n\n".join(con_context)+"\n\n"+query
+    # print(con_context)
+    # prompt=desc+"\n\n".join(con_context)+"\n\n"+query
+    prompt=desc+"\n\n"+query
     response = openai.Completion.create(
         model="text-davinci-002",
         prompt=prompt,
@@ -41,8 +42,8 @@ def gpt3_simple_prompt_response(query: str, desc: str):
         presence_penalty=0.6,
         stop=[" Human:", " AI:"]
     )
-    con_context.append(query)
-    con_context.append(response["choices"][0]["text"])
+    # con_context.append(query)
+    # con_context.append(response["choices"][0]["text"])
 
     #convert.synthesize_text({'text': response["choices"][0]["text"], 'id': response["id"]})
     return {'text': response["choices"][0]["text"], 'id': response["id"]}
@@ -56,8 +57,8 @@ def gpt3_prompt_response_with_voice(query: str, desc: str):
 
 @app.get("/reset")
 def reset():
-    global con_context
-    con_context = []
+    # global con_context
+    # con_context = []
     return ""
 
 """
@@ -72,6 +73,6 @@ def update_item(item_id: int, item: Item):
 """
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000, log_level="info")
+    uvicorn.run(app, host="localhost", port=8000, log_level="debug")
 
 
