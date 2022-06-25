@@ -1,0 +1,21 @@
+{
+    "response": {
+        "id": "cmpl-5MzXycMg70cm2Ik4udhWILMBx06RZ",
+        "object": "text_completion",
+        "created": 1656161486,
+        "model": "text-davinci-002",
+        "choices": [
+            {
+                "text": "\n\n Miller is the commander of Combat Technology Research Group (CTRG) Group 14, a multi-national NATO black ops unit. As Group 14's leader, Miller's first and foremost priority was the retrieval of a CSAT seismic weapon of mass destruction that was known only by its codename of \"Project Eastwind\". For nine years, his team was based on the Mediterranean island nation of the Republic of Altis and Stratis. Under his command, they initially spent five years embedded alongside the anti-coup Altian government Loyalists while also funnelling smuggled arms to the faction. Following the conclusion of the civil war with the signing of the Jerusalem Cease Fire agreement, his team's focus shifted to assisting the successors of the Loyalists",
+                "index": 0,
+                "logprobs": null,
+                "finish_reason": "length"
+            }
+        ],
+        "usage": {
+            "prompt_tokens": 269,
+            "completion_tokens": 150,
+            "total_tokens": 419
+        }
+    }
+}

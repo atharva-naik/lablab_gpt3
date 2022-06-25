@@ -4,9 +4,14 @@ from typing import *
 from fastapi import FastAPI
 from dotenv import load_dotenv
 from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 load_dotenv()
+
+app.mount("/voices", StaticFiles(directory="voices", html=True), name="voices")
+con_context = []
+
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 class Item(BaseModel):
@@ -15,11 +20,17 @@ class Item(BaseModel):
     is_offer: Union[bool, None] = None
 
 
+
+def tts_dummy(res: str):
+    
+    return "voices/Brief01.ogg"
+
 @app.get("/prompt")
-def gpt3_simple_prompt_response(text: str):
+def gpt3_simple_prompt_response(query: str, desc: str):
+    prompt=desc+"\n\n".join(con_context)+"\n\n"+query
     response = openai.Completion.create(
         model="text-davinci-002",
-        prompt=text,
+        prompt=prompt,
         temperature=0.9,
         max_tokens=150,
         top_p=1,
@@ -27,9 +38,18 @@ def gpt3_simple_prompt_response(text: str):
         presence_penalty=0.6,
         stop=[" Human:", " AI:"]
     )
-    return {"Hello": "World"}
+    con_context.append(query)
+    con_context.append(response["choices"][0]["text"])
+    return response["choices"][0]["text"]
 
+@app.get("/prompt_tts")
+def gpt3_prompt_response_with_voice(query: str, desc: str):
+    res = gpt3_simple_prompt_response(query, desc)
+    tts_path = tts_dummy(res)
+    
+    return {"text": res, "tts_url": tts_path}
 
+"""
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
@@ -38,3 +58,4 @@ def read_item(item_id: int, q: Union[str, None] = None):
 @app.put("/items/{item_id}")
 def update_item(item_id: int, item: Item):
     return {"item_name": item.name, "item_id": item_id}
+"""
