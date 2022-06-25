@@ -3,6 +3,7 @@ import openai
 from typing import *
 from fastapi import FastAPI
 from dotenv import load_dotenv
+from pandas import array
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 
@@ -27,6 +28,7 @@ def tts_dummy(res: str):
 
 @app.get("/prompt")
 def gpt3_simple_prompt_response(query: str, desc: str):
+    print(con_context)
     prompt=desc+"\n\n".join(con_context)+"\n\n"+query
     response = openai.Completion.create(
         model="text-davinci-002",
@@ -48,6 +50,12 @@ def gpt3_prompt_response_with_voice(query: str, desc: str):
     tts_path = tts_dummy(res)
     
     return {"text": res, "tts_url": tts_path}
+
+@app.get("/reset")
+def reset():
+    global con_context
+    con_context = []
+    return ""
 
 """
 @app.get("/items/{item_id}")
