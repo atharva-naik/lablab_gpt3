@@ -7,28 +7,37 @@ import urllib.parse
 from typing import *
 
 # TODO: test this function on a Soham's windows system
-def downloadTTSFile(url: str, target_destination: str="/downloaded", 
-                    fname: Union[str, None]=None) -> str:
+
+
+def downloadTTSFile(url: str, target_destination: str = "/downloaded",
+                    fname: Union[str, None] = None) -> str:
     # create target folder if it doesn't exist, ignore otherwise.
     os.makedirs(target_destination, exist_ok=True)
     if fname is None:
-        fname = pathlib.Path(target_destination).name
+        # fname = pathlib.Path(target_destination).name
+        fname = os.path.basename(url)
+        print(f'fname1 = {fname}')
     # final relative path name.
     fname = os.path.join(target_destination, fname)
-    content = requests.get(url).content
+    print(f'fname2 = {fname}')
+    print(f'url: {url}')
+    doc = requests.get(url)
     # write file to target destination folder.
     with open(fname, "wb") as f:
-        f.write(content)
+        f.write(doc.content)
     # return the relative path name.
     return fname
 
 # The event listener will be running in this block
+
+
 def listenForForwardSlash(start_delim='/', description='', domain='http://localhost:8000', target_destination='downloaded/'):
     while True:
         keyboard.wait(start_delim)
         keyboard.read_key()  # to read first slash
         print(f"'{start_delim}' was pressed. Will now start recording the keys.")
-        text = ' '.join(list(keyboard.get_typed_strings(keyboard.record(until='enter', suppress=False, trigger_on_release=False), allow_backspace=True)))
+        text = ' '.join(list(keyboard.get_typed_strings(keyboard.record(
+            until='enter', suppress=False, trigger_on_release=False), allow_backspace=True)))
         print("finalv2: ", text)
         safe_string = urllib.parse.quote_plus(description)
         print(f'Sent Request. Waiting for response...')
@@ -36,12 +45,17 @@ def listenForForwardSlash(start_delim='/', description='', domain='http://localh
             f'{domain}/prompt_tts?desc={safe_string}&query=%22What%20does%20Miller%20do%22', params={'query': text})
         print(f'Response received.')
         response_json = json.loads(r.text)
-        print(response_json['text'])
-
+        text = response_json['text']
+        if len(text.strip()) ==0:
+            text = "[WARNING: Empty string received as response.]"
+        print(text)
         # absolute tts URL.
-        abs_tts_url = os.path.join(domain, response_json["tts_url"])
+        tts_url = response_json["tts_url"]
+        abs_tts_url = f'{domain}/{tts_url}'
         saved_path = downloadTTSFile(abs_tts_url, target_destination)
         print(f"Speech file saved at {saved_path}")
+
+
 # with keyboard.Events() as events:
 #     for event in events:
 #         if event.key == keyboard.Key.enter:
