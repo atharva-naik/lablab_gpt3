@@ -6,6 +6,7 @@ import requests
 import urllib.parse
 from typing import *
 
+
 def downloadTTSFile(url: str, target_destination: str = "/downloaded",
                     fname: Union[str, None] = None) -> str:
     # create target folder if it doesn't exist, ignore otherwise.
@@ -22,7 +23,8 @@ def downloadTTSFile(url: str, target_destination: str = "/downloaded",
     # return the relative path name.
     return fname
 
-def add_character(desc: str, domain: str="http://localhost:8000") -> str:
+
+def add_character(desc: str, domain: str = "http://localhost:8000") -> str:
     """Create a new character for a given description and return the character id.
     Args:
         desc (str): character description to be passed to GPT3
@@ -35,6 +37,8 @@ def add_character(desc: str, domain: str="http://localhost:8000") -> str:
     return json.loads(requests.get(url).text)
 
 # platform indpendent part to communicate with ModMax and get text (subtitles) and voice output.
+
+
 def send_player_input_to_server(text, char_id='', domain='http://localhost:8000', target_destination='downloaded/'):
     print(f"query: {text}")
     query = urllib.parse.quote_plus(text)
@@ -43,7 +47,7 @@ def send_player_input_to_server(text, char_id='', domain='http://localhost:8000'
     print(f'Response received.')
     response_json = json.loads(r.text)
     text = response_json['text']
-    if len(text.strip()) ==0:
+    if len(text.strip()) == 0:
         text = "[WARNING: Empty string received as response.]"
     print(text)
     # absolute tts URL.
@@ -51,24 +55,29 @@ def send_player_input_to_server(text, char_id='', domain='http://localhost:8000'
     abs_tts_url = f'{domain}/{tts_url}'
     saved_path = downloadTTSFile(abs_tts_url, target_destination)
     print(f"Speech file saved at {saved_path}")
+    return text, saved_path
 
 # keylogger will start after '/'. Only works for Windows.
+
+
 def send_player_input_windows(start_delim='/', char_id='', domain='http://localhost:8000', target_destination='downloaded/'):
-    while True:
-        keyboard.wait(start_delim)
-        keyboard.read_key()  # to read first slash
-        print(f"'{start_delim}' was pressed. Will now start recording the keys.")
-        text = ' '.join(list(keyboard.get_typed_strings(keyboard.record(
-            until='enter', suppress=False, trigger_on_release=False), allow_backspace=True)))
-        send_player_input_to_server(text, char_id=char_id, domain=domain, 
+    keyboard.wait(start_delim)
+    keyboard.read_key()  # to read first slash
+    print(f"'{start_delim}' was pressed. Will now start recording the keys.")
+    text = ' '.join(list(keyboard.get_typed_strings(keyboard.record(
+        until='enter', suppress=False, trigger_on_release=False), allow_backspace=True)))
+    response_text, saved_audio_path = send_player_input_to_server(text, char_id=char_id, domain=domain,
                                     target_destination=target_destination)
+    return response_text, saved_audio_path
 
 # Keylogger for linux.
+
+
 class LinuxKeyLogger:
     def __init__(self):
         import pyxhook
         # text recorded till now.
-        self.recorded_text: str=""
+        self.recorded_text: str = ""
         # create a hook manager object
         self.hook = pyxhook.HookManager()
         self.hook.KeyDown = self.onKeyPress
@@ -83,7 +92,7 @@ class LinuxKeyLogger:
     def setTriggerKey(self, trigger_key_text):
         self.trigger_key_text = trigger_key_text
 
-    def setReturnCallback(self, func, args: list=[], kwargs: dict={}):
+    def setReturnCallback(self, func, args: list = [], kwargs: dict = {}):
         self.return_callback = func
         self.return_callback_args = args
         self.return_callback_kwargs = kwargs
@@ -103,13 +112,14 @@ class LinuxKeyLogger:
 
     def onKeyPress(self, event):
         evenText = str(event.Key)
-        # first check if the key is the trigger key. 
+        # first check if the key is the trigger key.
         # If it is then start listening,
         if evenText == self.trigger_key_text:
             self.listening = True
         # if the key wasn't trigger key and listening hasn't been activated yet, ignore.
-        if self.listening == False: return
-        
+        if self.listening == False:
+            return
+
         if evenText == "BackSpace":
             self.recorded_text = self.recorded_text[:-1]
         elif evenText == "space":
@@ -118,7 +128,7 @@ class LinuxKeyLogger:
         elif evenText == "Return":
             self.return_callback(
                 self.recorded_text,
-                *self.return_callback_args, 
+                *self.return_callback_args,
                 **self.return_callback_kwargs
             )
             # reset recorded text  and listening mode.
@@ -130,9 +140,10 @@ class LinuxKeyLogger:
         elif len(evenText) == 1:
             self.recorded_text += f"{event.Key}"
         print(" ", end="\r")
-        print(f"DEBUG: {self.recorded_text}", end="\r") # DEBUG
+        print(f"DEBUG: {self.recorded_text}", end="\r")  # DEBUG
 
 # for testing send player input on linux.
+
 def send_player_input_linux(start_delim='/', char_id='', domain='http://localhost:8000', target_destination='downloaded/'):
     linux_key_logger = LinuxKeyLogger()
     linux_key_logger.setTriggerKey("slash")
@@ -146,12 +157,16 @@ def send_player_input_linux(start_delim='/', char_id='', domain='http://localhos
     linux_key_logger.start()
 
 
-if __name__ == "__main__":
-    char_id = add_character("""Anne was born in Frankfurt, Germany. In 1934, when she was four and a half, her family moved to Amsterdam, Netherlands, after Adolf Hitler and the Nazi Party gained control over Germany. She spent most of her life in or around Amsterdam. By May 1940, the Franks were trapped in Amsterdam by the German occupation of the Netherlands. Anne lost her German citizenship in 1941 and became stateless. As persecutions of the Jewish population increased in July 1942, they went into hiding in concealed rooms behind a bookcase in the building where Anne's father, Otto Frank, worked. Until the family's arrest by the Gestapo on 4 August 1944, Anne kept a diary she had received as a birthday present, and wrote in it regularly.""")
+def run_appropriate_keylogger_for_platform(char_id):
     osname = platform.system()
     print(f"on platform: {osname}")
     if osname == "Windows":
-        send_player_input_windows(char_id=char_id)
+        while True:
+            send_player_input_windows(char_id=char_id)
     elif osname == "Linux":
         send_player_input_linux(char_id=char_id)
-        
+
+
+if __name__ == "__main__":
+    char_id = add_character("""Anne was born in Frankfurt, Germany. In 1934, when she was four and a half, her family moved to Amsterdam, Netherlands, after Adolf Hitler and the Nazi Party gained control over Germany. She spent most of her life in or around Amsterdam. By May 1940, the Franks were trapped in Amsterdam by the German occupation of the Netherlands. Anne lost her German citizenship in 1941 and became stateless. As persecutions of the Jewish population increased in July 1942, they went into hiding in concealed rooms behind a bookcase in the building where Anne's father, Otto Frank, worked. Until the family's arrest by the Gestapo on 4 August 1944, Anne kept a diary she had received as a birthday present, and wrote in it regularly.""")
+    run_appropriate_keylogger_for_platform(char_id)
