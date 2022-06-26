@@ -1,7 +1,6 @@
 import os
 import json
 import platform
-from tarfile import TarError
 import keyboard
 import requests
 import urllib.parse

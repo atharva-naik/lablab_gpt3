@@ -1,4 +1,5 @@
 import os
+import uuid
 import random
 import string
 import openai
@@ -22,14 +23,6 @@ character_to_desc_mapping = {}
 def tts_dummy(res: str):    
     return "voices/Brief01.ogg"
 
-def get_character_id(length=16):
-    id_str = ""
-    options = string.ascii_letters+string.digits
-    for i in range(16):
-        id_str += random.sample(options, k=1)[0]
-    
-    return id_str
-
 @app.get("/")
 def welcome():
     return f"Hi! Welcome to the ModMax Beta!"
@@ -37,7 +30,7 @@ def welcome():
 @app.get("/init")
 def init_new_character_session(desc: str):
     global character_to_desc_mapping
-    id = get_character_id()
+    id = str(uuid.uuid4())
     print(f"\x1b[33;1minit new character session\x1b[0m")
     print(f"id: {id}")
     print(f"desc: {desc}")
