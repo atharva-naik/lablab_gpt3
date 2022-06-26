@@ -30,12 +30,17 @@ startWithConsonant[] = {europe, university};
 
 if __name__ == "__main__":
     domain_name = "http://localhost:8000"
-    char_id = add_character("""Anne was born in Frankfurt, Germany. In 1934, when she was four and a half, her family moved to Amsterdam, Netherlands, after Adolf Hitler and the Nazi Party gained control over Germany. She spent most of her life in or around Amsterdam. By May 1940, the Franks were trapped in Amsterdam by the German occupation of the Netherlands. Anne lost her German citizenship in 1941 and became stateless. As persecutions of the Jewish population increased in July 1942, they went into hiding in concealed rooms behind a bookcase in the building where Anne's father, Otto Frank, worked. Until the family's arrest by the Gestapo on 4 August 1944, Anne kept a diary she had received as a birthday present, and wrote in it regularly.""")
-    response_text, saved_audio_path = send_player_input_windows(char_id=char_id)
-    characters_info = [{
-        "class_name": "Brief_SQL_Line_1",
-        "text": response_text.strip(),
-        "speech_path": saved_audio_path.strip(),
-        "actor_name": "SQL"
-    }]
-    generate_bibk(characters_info, target_directory="C:\\Users\\soham\\Desktop\\lablab_gpt3\\bibks", filename="brief_demo.bibk")
+    char_id = add_character("""Anne was born in Frankfurt, Germany. In 1934, when she was four and a half, her family moved to Amsterdam, Netherlands, after Adolf Hitler and the Nazi Party gained control over Germany. She spent most of her life in or around Amsterdam. By May 1940, the Franks were trapped in Amsterdam by the German occupation of the Netherlands. Anne lost her German citizenship in 1941 and became stateless. As persecutions of the Jewish population increased in July 1942, they went into hiding in concealed rooms behind a bookcase in the building where Anne's father, Otto Frank, worked. Until the family's arrest by the Gestapo on 4 August 1944, Anne kept a diary she had received as a birthday present, and wrote in it regularly.""", domain=domain_name)
+    characters_info = []
+    ctr=0
+    while True:
+        ctr+=1
+        fname = f"talk{ctr}.ogg"
+        response_text, saved_audio_path = send_player_input_windows(char_id=char_id, domain=domain_name, fname=fname)
+        characters_info.append({
+            "class_name": f"Brief_SQL_Line_{ctr}",
+            "text": response_text.strip(),
+            "speech_path": saved_audio_path.strip(),
+            "actor_name": "SQL"
+        })
+        generate_bibk(characters_info, target_directory="C:\\Users\\soham\\Desktop\\lablab_gpt3\\bikbs", filename="brief_demo.bikb")

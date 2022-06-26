@@ -39,7 +39,7 @@ def add_character(desc: str, domain: str = "http://localhost:8000") -> str:
 # platform indpendent part to communicate with ModMax and get text (subtitles) and voice output.
 
 
-def send_player_input_to_server(text, char_id='', domain='http://localhost:8000', target_destination='downloaded/'):
+def send_player_input_to_server(text, char_id='', domain='http://localhost:8000', target_destination='downloaded/', fname: Optional[str] = None):
     print(f"query: {text}")
     query = urllib.parse.quote_plus(text)
     print(f'Sent Request. Waiting for response...')
@@ -53,21 +53,21 @@ def send_player_input_to_server(text, char_id='', domain='http://localhost:8000'
     # absolute tts URL.
     tts_url = response_json["tts_url"]
     abs_tts_url = f'{domain}/{tts_url}'
-    saved_path = downloadTTSFile(abs_tts_url, target_destination)
+    saved_path = downloadTTSFile(abs_tts_url, target_destination, fname=fname)
     print(f"Speech file saved at {saved_path}")
     return text, saved_path
 
 # keylogger will start after '/'. Only works for Windows.
 
 
-def send_player_input_windows(start_delim='/', char_id='', domain='http://localhost:8000', target_destination='downloaded/'):
+def send_player_input_windows(start_delim='/', char_id='', domain='http://localhost:8000', target_destination='downloaded/', fname: Optional[str] = None):
     keyboard.wait(start_delim)
     keyboard.read_key()  # to read first slash
     print(f"'{start_delim}' was pressed. Will now start recording the keys.")
     text = ' '.join(list(keyboard.get_typed_strings(keyboard.record(
         until='enter', suppress=False, trigger_on_release=False), allow_backspace=True)))
     response_text, saved_audio_path = send_player_input_to_server(text, char_id=char_id, domain=domain,
-                                    target_destination=target_destination)
+                                    target_destination=target_destination, fname=fname)
     return response_text, saved_audio_path
 
 # Keylogger for linux.
