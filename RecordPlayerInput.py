@@ -109,6 +109,8 @@ class LinuxKeyLogger:
                 *self.return_callback_args, 
                 **self.return_callback_kwargs
             )
+            # reset recorded text.
+            self.recorded_text = ""
         elif evenText == "question":
             self.recorded_text += "?"
         elif len(evenText) == 1:
