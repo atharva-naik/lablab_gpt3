@@ -35,12 +35,12 @@ if __name__ == "__main__":
     ctr=0
     while True:
         ctr+=1
-        fname = f"talk{ctr}.ogg"
+        fname = f"talk1.ogg"
         response_text, saved_audio_path = send_player_input_windows(char_id=char_id, domain=domain_name, fname=fname)
-        characters_info.append({
-            "class_name": f"Brief_SQL_Line_{ctr}",
+        characters_info = [{
+            "class_name": f"Brief_SQL_Line_1",
             "text": response_text.strip(),
             "speech_path": saved_audio_path.strip(),
             "actor_name": "SQL"
-        })
+        }]
         generate_bibk(characters_info, target_directory="C:\\Users\\soham\\Desktop\\lablab_gpt3\\bikbs", filename="brief_demo.bikb")
