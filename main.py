@@ -1,13 +1,10 @@
 import os
 import uuid
-import random
-import string
 import openai
 import uvicorn
 from typing import *
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 import convert_to_audio_pyttsx3 as convert
 
