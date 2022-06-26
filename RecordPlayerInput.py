@@ -14,12 +14,9 @@ def downloadTTSFile(url: str, target_destination: str = "/downloaded",
     # create target folder if it doesn't exist, ignore otherwise.
     os.makedirs(target_destination, exist_ok=True)
     if fname is None:
-        # fname = pathlib.Path(target_destination).name
         fname = os.path.basename(url)
-        print(f'fname1 = {fname}')
     # final relative path name.
     fname = os.path.join(target_destination, fname)
-    print(f'fname2 = {fname}')
     print(f'url: {url}')
     doc = requests.get(url)
     # write file to target destination folder.
